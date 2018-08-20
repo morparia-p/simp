@@ -24,9 +24,6 @@ my $client = GRNOC::RabbitMQ::Client->new(   host => $rabbit_config->{'host'},
     timeout => 60,
     topic => 'Simp.CompData');
 
-
-
-
 #------ callback method
 sub _get{
 
@@ -35,10 +32,12 @@ sub _get{
     $method_obj = $params->{'method'}{'value'};
     $host = $params->{'host'}{'value'};
     my $results;
+    my $asd = 'asdasd';
     $results = $client->$method_obj(
+	#node	 => "asd",
         node     => [$host],
         period   => 60 
-    );
+);
     
     return $results;
 }

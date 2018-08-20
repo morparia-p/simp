@@ -48,6 +48,7 @@ sub get {
         node     => [$host],
         oidmatch  => [$oid],
     );
+    warn Dumper(defined $client);
     return $results;
 }
 

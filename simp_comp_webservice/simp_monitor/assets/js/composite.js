@@ -17,6 +17,7 @@ function loadPage() {
             }
             select.appendChild(el);
         }
+	sort(select);
     }
     webservice_call(myRequest, comp_url);
 
@@ -42,8 +43,16 @@ function loadPage() {
             host_drop.appendChild(el);
 
         }
+	sort(host_drop);
     }
     webservice_call(myRequest2, host_url+'?method=get_initial_data&from=comp');
+}
+function sort(dropdown){
+        var select = $(dropdown);
+        select.html(select.find('option').sort(function(x, y) {
+                return $(x).text() > $(y).text() ? 1 : -1;
+                     }));
+        select[0].selectedIndex = 0;
 }
 
 function webservice_call(request_object, url) {
@@ -52,6 +61,7 @@ function webservice_call(request_object, url) {
     request_object.open('GET', url, true);
     request_object.send();
 }
+
 function getData() {
     var param_str = comp_url +"?";
     var composite = document.getElementById('comp_dropdown');
@@ -66,6 +76,8 @@ function getData() {
     } else {
         param_str += "method=" + composite.options[composite.selectedIndex].text + "&host=" + host.options[host.selectedIndex].text;
     }
+
+    loading();
     console.log(param_str);
     var myRequest = new XMLHttpRequest();
     myRequest.responseType = 'json';
@@ -78,6 +90,12 @@ function getData() {
         var d = document;
         var collapsible = d.getElementById("accordion");
         collapsible.innerHTML = "";
+	if (Object.keys(result).length < 1){
+		div_warn = d.createElement('div');
+		div_warn.innerHTML = "No data to display at the moment.";
+		collapsible.appendChild(div_warn);
+	}
+
         for (var x in result) {
 
             // console.log(x);
@@ -94,10 +112,15 @@ function getData() {
                 var title = d.createElement('h4');
                 title.setAttribute("class", "panel-title");
 
-                var aTag = d.createElement('a');
+                var aTag = d.createElement('a')
+                aTag.setAttribute("class","collapsed");
                 aTag.setAttribute("data-toggle", "collapse");
                 aTag.setAttribute("data-parent", "#accordion");
-                aTag.setAttribute("href", "#"+y);
+	
+		var regex = /[.,\s]/g;
+		var temp = y.replace(regex, '');
+
+                aTag.setAttribute("href", "#"+temp);
                 aTag.innerHTML = y;
 
                 title.appendChild(aTag);
@@ -105,7 +128,7 @@ function getData() {
                 div1.appendChild(div2);
 
                 var div3 = d.createElement('div');
-                div3.id = y;
+                div3.id = temp;
                 div3.setAttribute("class", "panel-collapse collapse");
 
                 var div4 = d.createElement('div');
@@ -127,7 +150,15 @@ function getData() {
                 collapsible.appendChild(div1);
             }
         }
+    
+    stop_loading();
     }
     myRequest.send();
 }
-
+function loading(){
+        load = document.getElementById("loading");
+        load.style.visibility = "visible";
+}
+function stop_loading(){
+        load.style.visibility = "hidden";
+}

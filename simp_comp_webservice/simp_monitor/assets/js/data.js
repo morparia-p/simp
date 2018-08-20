@@ -24,11 +24,13 @@ function loadPage() {
         var el = document.createElement("option");
         el.textContent = "Please get OIDs";
         el.value = 0;
+        el.setAttribute("style", "display:none");
         oid_drop.appendChild(el);
 
 
         var el = document.createElement("option");
         el.textContent = "Please select a host";
+        el.setAttribute("style", "display:none");
         el.value = 0;
         host_drop.appendChild(el);
         for (var x in hostObj) {
@@ -39,10 +41,12 @@ function loadPage() {
             el.value = opt;
             host_drop.appendChild(el);
         }
+	sort(host_drop);
 
         el = document.createElement("option");
         el.textContent = "Please select a group";
         el.value = 0;
+        el.setAttribute("style", "display:none");
         group_drop.appendChild(el);
 
         for (var x in groupObj) {
@@ -53,6 +57,7 @@ function loadPage() {
             el.value = opt;
             group_drop.appendChild(el);
         }
+	sort(group_drop);
     }
     webservice_call(myRequest, url+'?method=get_initial_data&from=simp');
 }
@@ -163,6 +168,7 @@ function getData() {
         param_str += "&host=" + host_drop.value+"&oid="+oid_drop.value;
 
     }
+    loading();
     console.log(param_str);
     var myRequest = new XMLHttpRequest();
     myRequest.onload = function() {
@@ -172,7 +178,18 @@ function getData() {
         var d = document;
         var collapsible = d.getElementById("accordion");
         collapsible.innerHTML = "";
-        var count = 0; 
+        var count = 0;
+        if (!result){
+                div_warn = d.createElement('div');
+                div_warn.innerHTML = "No data to display at the moment.";
+                collapsible.appendChild(div_warn);
+        }
+	else if (Object.keys(result).length < 1){
+                        div_warn = d.createElement('div');
+                        div_warn.innerHTML = "No data to display at the moment.";
+                        collapsible.appendChild(div_warn);
+                }
+ 
         for (var x in result) {
             console.log(x);
             for (var y in result[x]) {
@@ -215,6 +232,7 @@ function getData() {
                 count = count + 1; 
             }
         }
+	stop_loading();
     }
     webservice_call(myRequest, param_str);
 }
@@ -224,6 +242,7 @@ function getOIDs(){
         alert("Please select a group");
         return false;
     }
+    loading();
 
     var myRequest = new XMLHttpRequest();
     myRequest.onload = function() {
@@ -236,6 +255,7 @@ function getOIDs(){
         var el = document.createElement("option");
         el.textContent = "Please select an oid";
         el.value = 0;
+        el.setAttribute("style", "display:none");
         oid_drop.appendChild(el);
         for (var x in oidObj) {
             var opt = oidObj[x];
@@ -244,7 +264,22 @@ function getOIDs(){
             el.value = opt;
             oid_drop.appendChild(el);
         }
+	sort(oid_drop);
+	stop_loading();
     }
     webservice_call(myRequest, url+'?method=get_oids&group='+group_drop.value);
 }
-
+function sort(dropdown){
+	var select = $(dropdown);
+	select.html(select.find('option').sort(function(x, y) {
+		return $(x).text() > $(y).text() ? 1 : -1;
+		     }));
+	select[0].selectedIndex = 0;
+}
+function loading(){
+        load = document.getElementById("loading");
+        load.style.visibility = "visible";
+}
+function stop_loading(){
+        load.style.visibility = "hidden";
+}

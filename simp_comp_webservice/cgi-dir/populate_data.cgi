@@ -45,6 +45,7 @@ sub get_initial_data {
 
             # Add if it does not exists to maintain uniqueness
             if (!exists($host_hash{$hosts->{$hash_key}})) {
+		warn Dumper($hosts->{$hash_key}."  ".$file);
                 $host_hash{$hosts->{$hash_key}} = 1;
             }
             if ($app eq 'simp') {
@@ -69,6 +70,10 @@ sub get_initial_data {
             foreach my $host (@$hosts){
                 my $id = $host->{$hash_key};
                 if (!exists($host_hash{$host->{$hash_key}})) {
+			if  (!defined $host->{$hash_key}) {
+					next;
+				}
+			warn Dumper($host->{$hash_key}."  ".$file);
                     $host_hash{$host->{$hash_key}} = 1;
                 }
 
@@ -93,7 +98,7 @@ sub get_initial_data {
         $results{'groups'} = [keys %group_hash];
     }
 
-    warn Dumper(%results);
+    #warn Dumper(%results);
     return \%results;
 }
 
@@ -297,6 +302,9 @@ sub get_oids{
     foreach my $group (@$groups){
         if ($group->{'name'} eq $group_param) {
             foreach my $mib (@$group{'mib'}) {
+                if(ref($mib) ne 'ARRAY'){
+                        $mib = [$mib]
+                }
                 foreach my $oid (@$mib) {
 
                     push @oid_array, $oid->{'oid'};

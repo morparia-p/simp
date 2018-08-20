@@ -1,8 +1,11 @@
 #!/usr/bin/perl -w
 use strict;
+use Time::HiRes qw(usleep gettimeofday tv_interval);
 use GRNOC::WebService;
+use JSON;
 use Data::Dumper;
 use Redis;
+#use Test::More tests => 1;
 # Reading the config file
 my $config      = GRNOC::Config->new(
 			config_file     => "/etc/simp/redis_config.xml",
@@ -10,6 +13,7 @@ my $config      = GRNOC::Config->new(
 			force_array => 0
 				);
 my $info = $config->get("/config");
+#ok(defined($config), "Config<<<");
 
 # Setting up Redis
 my $redis_host  = $info->{'redisInfo'}{'host'};
@@ -18,6 +22,10 @@ my $redis_port  = $info->{'redisInfo'}{'port'};
 
 warn Dumper("$redis_host $redis_port");
 my $redis=Redis->new(server => $redis_host.":".$redis_port);
+
+
+
+
 
 sub get_timestamp{
 
@@ -37,16 +45,16 @@ sub get_timestamp{
         my $count=1;
         my %dict;
 	my $hostname; # Get the hostname from ip using db 1
-
-        while (($key,$value) = each (%arr)){
+        while (($key,$value) = each (%arr))
+        {
                 my ($gid,$interval)=split(',', $value);
                 $gids{$gid}=1;
 
         }
         my $group_name;
         my %db1_op;
-
-        while(($group_name,$value) = each (%gids)){
+        while(($group_name,$value) = each (%gids))
+        {
                 $redis->select(2);
                 my $temp = $redis->get($ip.",".$group_name);
                 my ($pid,$timestamp)=split(',',$temp);
@@ -58,7 +66,7 @@ sub get_timestamp{
 		$db1_op{$group_name}{'node'}	= $node_name;
 		$worker_name                    =~ s/[^0-9]//g;
 		my $worker_id                   =~ s/[^0-9]//g;
-		my $group                          =~ s/$worker_name//g;
+		my $group                       =~ s/$worker_name//g;
 		$db1_op{$group_name}{'group'}	= $group;
 		$db1_op{$group_name}{'wid'}	= $worker_name;
 		$db1_op{$group_name}{'time'}	= $time;
@@ -66,12 +74,12 @@ sub get_timestamp{
 		
 	}
 
+
+
 	$redis->select(0);
-
 	# Get all keys in DB0 that contain hostname
-        my %keys	= $redis->keys("*$hostname*");
-	my $debug 	= $hostname;
-
+        my %keys = $redis->keys("*$hostname*");
+	my $debug = $hostname;
 	if ($key_count > 0 and defined($hostname)) {
 			my %timestamp;
 		while( my ($key) = each (%keys))
@@ -87,11 +95,11 @@ sub get_timestamp{
 				$timestamp{$key}{'timestamp'}	= $timestamp;
 
 			}	
-		my $json		= encode_json \%dict;
-		$results{'groups'}	= \%dict;
-		$results{'key0'}	= \%db1_op;
-		$results{'timestamps'}	= \%timestamp;
-		$results{'debug'} 	= $debug;
+		my $json = encode_json \%dict;
+		$results{'groups'}= \%dict;
+		$results{'key0'}=\%db1_op;
+		$results{'timestamps'}=\%timestamp;
+		$results{'debug'} = $debug;
 		return \%results;
 
 		}
@@ -101,7 +109,6 @@ sub get_timestamp{
 	$results{'test'} = \%keys;
 	return \%results;
 }
-
 
 sub get_timestamp_hostname{
         my $mthod_obj = shift;
@@ -118,52 +125,47 @@ sub get_timestamp_hostname{
         my $count=1;
         my %dict;
         my $hostname = $ip; # Get the hostname from ip using db 1i
-
  	$redis->select(0);	
         my %keys = $redis->keys("*$ip*");
         my $debug = $hostname;
-
         if (defined($hostname)) {
-                my %timestamp;
+                        my %timestamp;
                 while( my ($key) = each (%keys))
                         {	warn Dumper($key);
                                 my ($local_ip,$worker_name,$timestamp)  = split(",",$key);
                                 my $group                       = $worker_name;
-				my $test			=~ /^(d+)D*$/g;
-				warn Dumper($test);
-                                $worker_name                    =~ s/[^0-9]//g;
-                                my $worker_id                   =~ s/[^0-9]//g;;
-                                $group                          =~ s/$worker_name//g;
+				my $test			= $worker_name;
+				$test				=~ s/[0-9]+$//g;
                                 $timestamp{$key}{'ip'}          = $local_ip;
-                                $timestamp{$key}{'group'}       = $group;
-                                $timestamp{$key}{'wid'}         = $worker_name;
+                                $timestamp{$key}{'group'}       = $test;
+                                $timestamp{$key}{'wid'}         = $&;
                                 $timestamp{$key}{'timestamp'}   = $timestamp;
-
+ 
                         }
-                $results{'timestamps'}	= \%timestamp;
+                $results{'timestamps'}=\%timestamp;
                 return \%results;
 	}
 }
 
 sub get_data{
-        my $method_obj 	= shift;
+        my $method_obj  = shift;
         my $params      = shift;
-        my $ip          = $params->{'ip'}{'value'};
-        my $group_id    = $params->{'group_name'}{'value'};
-        my $worker_id   = $params->{'worker_id'}{'value'};
-        my $timestamp   = $params->{'timestamp'}{'value'};
+        my $ip          =       $params->{'ip'}{'value'};
+        my $group_id    =       $params->{'group_name'}{'value'};
+        my $worker_id   =       $params->{'worker_id'}{'value'};
+        my $timestamp   =       $params->{'timestamp'}{'value'};
 
         $redis->select(0);
-        my @data        = $redis->smembers($ip.",".$group_id.$worker_id.','.$timestamp);
+        my @data        =       $redis->smembers($ip.",".$group_id.$worker_id.','.$timestamp);
         my %dict;
         foreach (@data)
         {
-                my $oid 	= substr( $_,0, index($_ , ","));
-                my $oid_data 	= substr($_, index($_ , ",")+1,-1);
-                $dict{$oid}	= $oid_data;
+                my $oid =substr( $_,0, index($_ , ","));
+                my $oid_data = substr($_, index($_ , ",")+1,-1);
+                $dict{$oid}= $oid_data;
         }
         my %result;
-        $result{'oid'}	= \%dict;
+        $result{'oid'}=\%dict;
         return \%result;
 
 }
@@ -185,6 +187,12 @@ $get_timestamp->add_input_parameter(
 						description	=> 'ip address'
 				);
 
+#$get_timestamp->add_input_parameter(
+#						name		=> 'group',
+#						pattern		=> '((\d*\D*)*)$',
+#						required	=> 1,
+#						description	=> 'group_name'
+#				);
 
 my $res2 = $svc->register_method($get_timestamp);
 
