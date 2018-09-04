@@ -7,7 +7,7 @@ function loadPage() {
     document.getElementById("rate_box").setAttribute("disabled", true);
     var myRequest = new XMLHttpRequest();
     myRequest.onload = function() {
-        console.log(myRequest.response);
+        //console.log(myRequest.response);
         var host_drop = document.getElementById("host_dropdown");
         var group_drop = document.getElementById("group_dropdown");
         var oid_drop = document.getElementById("oid_dropdown");
@@ -63,13 +63,13 @@ function loadPage() {
 }
 
 function get_data(control) {
-    console.log(control.id);
-    console.log(control.value);
+    //console.log(control.id);
+    //console.log(control.value);
 
     var myRequest = new XMLHttpRequest();
 
     myRequest.onload = function() {
-        console.log(myRequest.response);
+        //console.log(myRequest.response);
         var dropdown;
         var respObj;
         var selected_opt;
@@ -84,7 +84,7 @@ function get_data(control) {
         }
         dropdown.innerHTML = "";
         for (var x in respObj) {
-            console.log(respObj[x]);
+            //console.log(respObj[x]);
             var opt = respObj[x];
             var el = document.createElement("option");
             el.textContent = opt;
@@ -105,14 +105,14 @@ function get_data(control) {
 }
 
 function webservice_call(request_object, url) {
-    console.log(url);
+    //console.log(url);
     request_object.responseType = 'json';
     request_object.open('GET', url, true);
     request_object.send();
 }
 function change_textbox(control) {
-    console.log(control);
-    console.log(control.value);
+    //console.log(control);
+    //console.log(control.value);
 
 
     var rate_box = document.getElementById("rate_box");
@@ -157,7 +157,7 @@ function getData() {
         if (type_drop.value == 1) {
             param_str += "method=get" ;
         } else {
-            console.log("Rate: " + rate_text.value);
+            //console.log("Rate: " + rate_text.value);
             if (rate_text.value.trim() == "") {
                 alert("Please enter the period");
                 return false; 
@@ -169,11 +169,11 @@ function getData() {
 
     }
     loading();
-    console.log(param_str);
+    //console.log(param_str);
     var myRequest = new XMLHttpRequest();
     myRequest.onload = function() {
         // var jsonObjStr= JSON.stringify(myRequest.response);
-        console.log(myRequest.response);
+        //console.log(myRequest.response);
         var result = myRequest.response.results;
         var d = document;
         var collapsible = d.getElementById("accordion");
@@ -191,7 +191,7 @@ function getData() {
                 }
  
         for (var x in result) {
-            console.log(x);
+            //console.log(x);
             for (var y in result[x]) {
                 var div1 = d.createElement('div');
                 div1.setAttribute("class", "panel panel-default");
@@ -201,9 +201,9 @@ function getData() {
 
                 var title = d.createElement('h4');
                 title.setAttribute("class", "panel-title");
-
+                title.setAttribute("style", "word-wrap: break-word");
                 var aTag = d.createElement('a');
-                aTag.setAttribute("data-toggle", "collapse");
+                //aTag.setAttribute("data-toggle", "collapse");
                 aTag.setAttribute("data-parent", "#accordion");
                 aTag.setAttribute("href", "#"+count);
                 aTag.innerHTML = y;
@@ -214,10 +214,10 @@ function getData() {
 
                 var div3 = d.createElement('div');
                 div3.id = count;
-                div3.setAttribute("class", "panel-collapse collapse");
+                div3.setAttribute("class", "show");
 
                 var div4 = d.createElement('div');
-                div4.setAttribute("class", "panel-body");
+                div4.setAttribute("class", "well-lg");
                 var temp_str = "";
                 for (var key in result[x][y]) {
                     // temp_str += key + " = " + result[x][y][key] + "<br>";
@@ -249,7 +249,7 @@ function getOIDs(){
 
         var oid_drop = document.getElementById("oid_dropdown");
         var oidObj= myRequest.response.oids;
-        console.log(oidObj);
+        //console.log(oidObj);
         oid_drop.innerHTML = "";
 
         var el = document.createElement("option");

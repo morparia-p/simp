@@ -24,8 +24,8 @@ function loadPage() {
     var myRequest2 = new XMLHttpRequest();
     myRequest2.onload = function(e) {
 
-        console.log("Req 2:");
-        console.log(myRequest2.response);
+        //console.log("Req 2:");
+        //console.log(myRequest2.response);
 
         var host_drop = document.getElementById("host_dropdown");
 
@@ -56,7 +56,7 @@ function sort(dropdown){
 }
 
 function webservice_call(request_object, url) {
-    console.log(url);
+    //console.log(url);
     request_object.responseType = 'json';
     request_object.open('GET', url, true);
     request_object.send();
@@ -78,14 +78,14 @@ function getData() {
     }
 
     loading();
-    console.log(param_str);
+    //console.log(param_str);
     var myRequest = new XMLHttpRequest();
     myRequest.responseType = 'json';
     myRequest.open('GET', param_str, true);
     myRequest.onload = function() {
 
         var jsonObjStr= JSON.stringify(myRequest.response);
-        console.log(myRequest.response);
+        //console.log(myRequest.response);
         var result = myRequest.response.results;
         var d = document;
         var collapsible = d.getElementById("accordion");
@@ -111,10 +111,11 @@ function getData() {
 
                 var title = d.createElement('h4');
                 title.setAttribute("class", "panel-title");
+		title.setAttribute("style", "word-wrap: break-word");
 
                 var aTag = d.createElement('a')
-                aTag.setAttribute("class","collapsed");
-                aTag.setAttribute("data-toggle", "collapse");
+                //aTag.setAttribute("class","collapsed");
+                //aTag.setAttribute("data-toggle", "collapse");
                 aTag.setAttribute("data-parent", "#accordion");
 	
 		var regex = /[.,\s]/g;
@@ -129,10 +130,10 @@ function getData() {
 
                 var div3 = d.createElement('div');
                 div3.id = temp;
-                div3.setAttribute("class", "panel-collapse collapse");
+                div3.setAttribute("class", "show");
 
                 var div4 = d.createElement('div');
-                div4.setAttribute("class", "panel-body");
+                div4.setAttribute("class", "well-lg");
                 var temp_str = "";
                 for (var key in result[x][y]) {
                     // if (p.hasOwnProperty(key)) {

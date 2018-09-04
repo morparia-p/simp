@@ -7,7 +7,7 @@ function pageLoad(){
 	var xhttp   = new XMLHttpRequest();
 
 	xhttp.onload		=function(){
-	console.log(xhttp.response);
+	//console.log(xhttp.response);
 	host_dropdown.innerHTML = null;
 	
 	var el		= document.createElement("option");
@@ -38,7 +38,7 @@ function sort(dropdown){
 	select[0].selectedIndex = 0;
 }
 function webservice_call(request_object, url) {
-    console.log(url);
+    //console.log(url);
     request_object.responseType = 'json';
     request_object.open('GET', url, true);
     request_object.send();
@@ -53,7 +53,7 @@ function getGroup(){
     var group_drop	= document.getElementById("group-dropdown");
     var xhttp	= new XMLHttpRequest();
     xhttp.onload	=function(){
-        console.log(xhttp.response);
+        //console.log(xhttp.response);
         group_drop.innerHTML	= "";
 
         var el	= document.createElement("option");
@@ -95,7 +95,7 @@ function get_timestamps(){
 		var timestampObj = xhttp.response.groups;
 		key0		= xhttp.response.key0;
 		var timestamps	= xhttp.response.timestamps
-		console.log(xhttp.response);
+		//console.log(xhttp.response);
 
 
 		var table	= document.createElement("table");
@@ -181,15 +181,15 @@ function sortTable(table) {
 }
 
 function get_data(ip,group,worker_id,timestamp){
-	console.log(ip);
-	console.log(group);
-	console.log(worker_id);
-	console.log(timestamp);	
+	//console.log(ip);
+	//console.log(group);
+	//console.log(worker_id);
+	//console.log(timestamp);	
 
 	loading();
 	var xhttp	= new XMLHttpRequest();
 	xhttp.onload	= function(){
-		console.log(xhttp.response);
+		//console.log(xhttp.response);
 		var data	= xhttp.response.oid;
 		var collapsible	= document.getElementById("accordion");
 		collapsible.innerHTML	= "";
